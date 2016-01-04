@@ -1,3 +1,17 @@
+// Copyright 2016 KB Sriram
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
@@ -80,7 +94,7 @@ func writePoint(w *bufio.Writer, gpsLog *sg.GPSLog) error {
       <trkpt lat="%.6f" lon="%.6f">`,
 		toDD(gpsLog.LatitudeSpec, gpsLog.Latitude),
 		toDD(gpsLog.LongitudeSpec, gpsLog.Longitude)))
-	
+
 	// assumes timestamps are in localtime
 	_, offset := time.Now().Zone()
 	var neg byte
@@ -96,9 +110,9 @@ func writePoint(w *bufio.Writer, gpsLog *sg.GPSLog) error {
 
 	w.WriteString(fmt.Sprintf(`
         <time>%4d-%02d-%02dT%02d:%02d:%02d%c%02d:%02d</time>`,
-		2000 + int(gpsLog.Year), int(gpsLog.Mon), int(gpsLog.Day),
+		2000+int(gpsLog.Year), int(gpsLog.Mon), int(gpsLog.Day),
 		int(gpsLog.Hour), int(gpsLog.Min), int(gpsLog.Sec),
-		neg, hOffset, sOffset / 60))
+		neg, hOffset, sOffset/60))
 
 	w.WriteString(`
         <extensions>
@@ -107,7 +121,7 @@ func writePoint(w *bufio.Writer, gpsLog *sg.GPSLog) error {
 	// speed comes in knots, convert to m/s
 	w.WriteString(fmt.Sprintf(`
             <gpxtpx:speed>%.6f</gpxtpx:speed>`,
-	gpsLog.Speed * 0.514444))
+		gpsLog.Speed*0.514444))
 
 	// At low speeds, 0 values for bearing appear to mean unknown, so
 	// skip such points
@@ -128,7 +142,7 @@ func writePoint(w *bufio.Writer, gpsLog *sg.GPSLog) error {
 
 // Input comes as decimal minutes
 func toDD(spec byte, v float32) float32 {
-	deg, frac := math.Modf(float64(v)/100)
+	deg, frac := math.Modf(float64(v) / 100)
 	result := float32(deg + frac/0.6)
 	// An educated guess
 	if spec == 'S' || spec == 'W' {
